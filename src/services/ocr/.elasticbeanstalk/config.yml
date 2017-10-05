@@ -1,0 +1,14 @@
+branch-defaults:
+  default:
+    environment: ocr-staging1
+  master-deploy:
+    environment: ocr-prod
+  staging-deploy:
+    environment: ocr-staging1
+global:
+  application_name: testrun
+  default_ec2_keyname: null
+  default_platform: Node.js
+  default_region: us-east-1
+  profile: null
+  sc: null

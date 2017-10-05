@@ -1,0 +1,18 @@
+{
+  "main": "index.js",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "scripts": {
+    "start": "micro -p ${PORT:-8081}",
+    "dev": "micro-dev -p 4001"
+  },
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "micro": "^8.0.2",
+    "micro-cors": "^0.0.4",
+    "micro-dev": "^1.2.1",
+    "micro-sentry": "^1.1.0",
+    "stripe": "^4.24.0"
+  }
+}

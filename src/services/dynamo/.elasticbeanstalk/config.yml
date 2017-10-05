@@ -1,0 +1,14 @@
+branch-defaults:
+  default:
+    environment: dynamo-staging1
+  master-deploy:
+    environment: dynamo-prod
+  staging-deploy:
+    environment: dynamo-staging1
+global:
+  application_name: testrun
+  default_ec2_keyname: null
+  default_platform: Node.js
+  default_region: us-east-1
+  profile: null
+  sc: null

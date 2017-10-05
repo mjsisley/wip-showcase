@@ -1,0 +1,19 @@
+{
+  "name": "mycraft-services",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "private": true,
+  "dependencies": {
+    "babel-preset-es2015": "^6.24.1",
+    "micro": "^8.0.2",
+    "micro-cluster": "^1.0.0",
+    "micro-dev": "^1.2.1",
+    "then-sleep": "^1.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "//start": "micro-cluster -p 4000 app.js",
+    "dev": "(cd ./notifications && npm run dev) | (cd ./payments && npm run dev) | (cd ./ocr && npm run dev) | (cd ./fileUpload && npm run dev) | (cd ./auth && npm run dev)| (cd ./dynamo && npm run dev)| (cd ./verifyPhone && npm run dev)"
+  }
+}

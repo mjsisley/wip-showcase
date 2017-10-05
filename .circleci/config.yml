@@ -1,0 +1,272 @@
+# We deploy all services (EB and Lambda) to AWS here. Netlify handles the deployment of the web client when the commit goes through.
+
+version: 2
+workflows:
+    version: 2
+    deploy:
+        jobs:
+            - deploy-staging:
+                filters:
+                    branches:
+                        only:
+                            - staging-deploy
+            - deploy-master:
+                filters:
+                    branches:
+                        only:
+                            - master-deploy
+jobs:
+    deploy-staging:
+        # docker:
+        #     - image: circleci/node:8.4.0
+        machine: true
+        steps:
+            - checkout
+            - run:
+                name: Setup AWS
+                command: sudo apt-get install python-dev && sudo pip install --upgrade pip && sudo easy_install --upgrade six && sudo pip install awsebcli
+            - restore_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                working_directory: src/scheduledJobs/exampleJob
+            - run:
+                name: Install deps
+                command: npm install
+                working_directory: src/scheduledJobs/exampleJob
+            - save_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                paths:
+                    - node_modules
+                working_directory: src/scheduledJobs/exampleJob
+            - run:
+                name: zip files
+                command: zip -r9 exampleJob.zip .
+                working_directory: src/scheduledJobs/exampleJob
+            - run:
+                name: Update Lambda Function
+                command: aws --region us-east-1 lambda update-function-code --function-name exampleJob --zip-file fileb://./exampleJob.zip
+                working_directory: src/scheduledJobs/exampleJob
+            - restore_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                working_directory: src/services/dynamo
+            - run:
+                name: Install deps
+                command: npm install
+                working_directory: src/services/dynamo
+            - save_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                paths:
+                    - node_modules
+                working_directory: src/services/dynamo
+            - run:
+                name: Deploy File Upload Service
+                command: eb init -r us-east-1 testrun && eb deploy
+                working_directory: src/services/dynamo
+            - restore_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                working_directory: src/services/payments
+            - run:
+                name: Install deps
+                command: npm install
+                working_directory: src/services/payments
+            - save_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                paths:
+                    - node_modules
+                working_directory: src/services/payments
+            - run:
+                name: Deploy Payments Service
+                command: eb init -r us-east-1 testrun && eb deploy
+                working_directory: src/services/payments
+            - restore_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                working_directory: src/services/notifications
+            - run:
+                name: Install deps
+                command: npm install
+                working_directory: src/services/notifications
+            - save_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                paths:
+                    - node_modules
+                working_directory: src/services/notifications
+            - run:
+                name: Deploy Notifications Service
+                command: eb init -r us-east-1 testrun && eb deploy
+                working_directory: src/services/notifications
+            - restore_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                working_directory: src/services/fileUpload
+            - run:
+                name: Install deps
+                command: npm install
+                working_directory: src/services/fileUpload
+            - save_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                paths:
+                    - node_modules
+                working_directory: src/services/fileUpload
+            - run:
+                name: Deploy File Upload Service
+                command: eb init -r us-east-1 testrun && eb deploy
+                working_directory: src/services/fileUpload
+            # - restore_cache:
+            #     key: dependency-cache-{{ checksum "package.json" }}
+            #     working_directory: src/services/ocr
+            # - run:
+            #     name: Install deps
+            #     command: npm install --unsafe-perm
+            #     working_directory: src/services/ocr
+            # - save_cache:
+            #     key: dependency-cache-{{ checksum "package.json" }}
+            #     paths:
+            #         - node_modules
+            #     working_directory: src/services/ocr
+            # - run:
+            #     name: Deploy OCR Service
+            #     command: eb init -r us-east-1 testrun && eb deploy
+            #     working_directory: src/services/ocr
+            # - restore_cache:
+            #     key: dependency-cache-{{ checksum "package.json" }}
+            #     working_directory: src/services/verifyPhone
+            # - run:
+            #     name: Install deps
+            #     command: npm install
+            #     working_directory: src/services/verifyPhone
+            # - save_cache:
+            #     key: dependency-cache-{{ checksum "package.json" }}
+            #     paths:
+            #         - node_modules
+            #     working_directory: src/services/verifyPhone
+            # - run:
+            #     name: Deploy Verify Phone Service
+            #     command: eb init -r us-east-1 testrun && eb deploy
+            #     working_directory: src/services/verifyPhone
+    deploy-master:
+        # docker:
+        #     - image: circleci/node:8.4.0
+        machine: true
+        steps:
+            - checkout
+            - run:
+                name: Setup AWS
+                command: sudo apt-get install python-dev && sudo pip install --upgrade pip && sudo easy_install --upgrade six && sudo pip install awsebcli
+            - restore_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                working_directory: src/scheduledJobs/exampleJob
+            - run:
+                name: Install deps
+                command: npm install
+                working_directory: src/scheduledJobs/exampleJob
+            - save_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                paths:
+                    - node_modules
+                working_directory: src/scheduledJobs/exampleJob
+            - run:
+                name: zip files
+                command: zip -r9 exampleJob.zip .
+                working_directory: src/scheduledJobs/exampleJob
+            - run:
+                name: Update Lambda Function
+                command: aws --region us-east-1 lambda update-function-code --function-name exampleJob --zip-file fileb://./exampleJob.zip
+                working_directory: src/scheduledJobs/exampleJob
+            - run: 
+                name: Publish Version and Update Alias of Lambda Function
+                command: aws --region us-east-1 lambda update-alias --function-name exampleJob --function-version $(aws --region us-east-1 lambda publish-version --function-name exampleJob | jq -r .Version) --name prod
+                working_directory: src/scheduledJobs/exampleJob
+            - restore_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                working_directory: src/services/notifications
+            - run:
+                name: Install deps
+                command: npm install
+                working_directory: src/services/notifications
+            - save_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                paths:
+                    - node_modules
+                working_directory: src/services/notifications
+            - run:
+                name: Deploy Notifications Service
+                command: eb init -r us-east-1 testrun && eb deploy
+                working_directory: src/services/notifications
+            - restore_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                working_directory: src/services/fileUpload
+            - run:
+                name: Install deps
+                command: npm install
+                working_directory: src/services/fileUpload
+            - save_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                paths:
+                    - node_modules
+                working_directory: src/services/fileUpload
+            - run:
+                name: Deploy File Upload Service
+                command: eb init -r us-east-1 testrun && eb deploy
+                working_directory: src/services/fileUpload
+            # - restore_cache:
+            #     key: dependency-cache-{{ checksum "package.json" }}
+            #     working_directory: src/services/ocr
+            # - run:
+            #     name: Install deps
+            #     command: npm install --unsafe-perm
+            #     working_directory: src/services/ocr
+            # - save_cache:
+            #     key: dependency-cache-{{ checksum "package.json" }}
+            #     paths:
+            #         - node_modules
+            #     working_directory: src/services/ocr
+            # - run:
+            #     name: Deploy OCR Service
+            #     command: eb init -r us-east-1 testrun && eb deploy
+            #     working_directory: src/services/ocr
+            - restore_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                working_directory: src/services/payments
+            - run:
+                name: Install deps
+                command: npm install
+                working_directory: src/services/payments
+            - save_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                paths:
+                    - node_modules
+                working_directory: src/services/payments
+            - run:
+                name: Deploy Payments Service
+                command: eb init -r us-east-1 testrun && eb deploy
+                working_directory: src/services/payments
+            - restore_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                working_directory: src/services/verifyPhone
+            - run:
+                name: Install deps
+                command: npm install
+                working_directory: src/services/verifyPhone
+            - save_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                paths:
+                    - node_modules
+                working_directory: src/services/verifyPhone
+            - run:
+                name: Deploy Verify Phone Service
+                command: eb init -r us-east-1 testrun && eb deploy
+                working_directory: src/services/verifyPhone
+            - restore_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                working_directory: src/services/dynamo
+            - run:
+                name: Install deps
+                command: npm install
+                working_directory: src/services/dynamo
+            - save_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                paths:
+                    - node_modules
+                working_directory: src/services/dynamo
+            - run:
+                name: Deploy File Upload Service
+                command: eb init -r us-east-1 testrun && eb deploy
+                working_directory: src/services/dynamo

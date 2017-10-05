@@ -1,0 +1,20 @@
+{
+  "main": "lib/index.js",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "scripts": {
+    "start": "micro -p ${PORT:-8081}",
+    "dev": "micro-dev -p 4006"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.101.0",
+    "dotenv": "^4.0.0",
+    "micro": "^8.0.2",
+    "micro-sentry": "^1.1.0",
+    "notifme-sdk": "^0.7.1"
+  },
+  "devDependencies": {
+    "micro-dev": "^1.2.1"
+  }
+}

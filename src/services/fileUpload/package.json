@@ -1,0 +1,20 @@
+{
+  "main": "index.js",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "scripts": {
+    "start": "micro -p ${PORT:-8081}",
+    "dev": "micro-dev -p 4003"
+  },
+  "dependencies": {
+    "amazon-s3-url-signer": "^0.1.0",
+    "aws-sdk": "^2.100.0",
+    "dotenv": "^4.0.0",
+    "micro": "^8.0.2",
+    "micro-dev": "^1.2.1",
+    "micro-sentry": "^1.1.0",
+    "then-sleep": "^1.0.1",
+    "utf8": "^2.1.2"
+  }
+}

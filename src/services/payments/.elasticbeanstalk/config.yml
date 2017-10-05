@@ -1,0 +1,14 @@
+branch-defaults:
+  default:
+    environment: payments-staging1   
+  master-deploy:
+    environment: payments-prod
+  staging-deploy:
+    environment: payments-staging1    
+global:
+  application_name: testrun
+  default_ec2_keyname: null
+  default_platform: Node.js
+  default_region: us-east-1
+  profile: null
+  sc: null

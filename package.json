@@ -1,0 +1,119 @@
+{
+  "name": "wip-showcase",
+  "version": "0.1.0",
+  "license": "MIT",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "proxy": {
+    "/notifications": {
+      "target": "http://localhost:4000"
+    },
+    "/payments": {
+      "target": "http://localhost:4001"
+    },
+    "/ocr": {
+      "target": "http://localhost:4002"
+    },
+    "/fileupload": {
+      "target": "http://localhost:4003"
+    },
+    "/auth": {
+      "target": "http://localhost:4004"
+    },
+    "/dynamo": {
+      "target": "http://localhost:4005"
+    },
+    "/verifyphone": {
+      "target": "http://localhost:4006"
+    }
+  },
+  "reactSnapshot": {
+    "exclude": [
+      "/transitions_and_teleports",
+      "/api/**",
+      "/lottie_and_modals",
+      "/auth",
+      "/auth/**",
+      "/anim/**",
+      "/reduxDemo",
+      "/callback",
+      "/verifyphone",
+      "/dynamo",
+      "/fileupload",
+      "/payments",
+      "/notifications"
+    ]
+  },
+  "dependencies": {
+    "@mjsisley/upload": "^3.0.7",
+    "@navjobs/upload": "^3.0.7",
+    "@stayradiated/react-floating-label": "^1.0.5",
+    "animated": "^0.2.0",
+    "auth0-js": "^8.9.2",
+    "auth0-lock": "^10.20.0",
+    "babel-preset-es2015": "^6.24.1",
+    "contentful": "^4.6.1",
+    "cross-env": "^5.0.5",
+    "localforage": "^1.5.0",
+    "lodash": "^4.17.4",
+    "nivo": "^0.22.1",
+    "raven-js": "^3.17.0",
+    "react": "^15.6.1",
+    "react-animations": "^0.1.0",
+    "react-credit-card": "^0.20.0",
+    "react-credit-cards": "^0.5.3",
+    "react-dom": "^15.6.1",
+    "react-enhanced-form": "^1.4.5",
+    "react-floating-label": "^1.0.0",
+    "react-ga": "^2.2.0",
+    "react-headroom": "^2.1.6",
+    "react-helmet": "^5.1.3",
+    "react-input-mask": "^1.0.7",
+    "react-intl": "^2.3.0",
+    "react-intl-redux": "^0.6.0",
+    "react-loadable": "^4.0.4",
+    "react-lottie": "^0.2.1",
+    "react-maskedinput": "^4.0.0",
+    "react-no-ssr": "^1.1.0",
+    "react-redux": "^5.0.6",
+    "react-router": "^4.1.2",
+    "react-router-dom": "^4.1.2",
+    "react-router-transition": "^0.1.1",
+    "react-scripts": "1.0.11",
+    "react-snapshot": "^2.0.0-1",
+    "react-teleportation": "^0.0.8",
+    "react-toggled": "^1.0.2",
+    "react-transition-group": "^2.2.0",
+    "react-waypoint": "^7.0.4",
+    "@mjsisley/rebass": "^1.0.4",
+    "redux": "^3.7.2",
+    "redux-logger": "^3.0.6",
+    "redux-persist": "^4.9.1",
+    "reselect": "^3.0.1",
+    "source-map-explorer": "^1.4.0",
+    "styled-components": "^2.1.2",
+    "styled-normalize": "^2.2.1"
+  },
+  "devDependencies": {
+    "pushstate-server": "^3.0.1",
+    "webpack-bundle-analyzer": "^2.9.0"
+  },
+  "scripts": {
+    "start":
+      "cross-env REACT_APP_API_DOMAIN=http://localhost:3000 REACT_APP_DOMAIN=http://localhost:3000 npm run start:webClient | npm run start:services",
+    "start:withDb": "npm run start | npm run start:devdb",
+    "//build": "react-scripts build && react-snapshot",
+    "build": "npm run build-reg",
+    "build-reg": "react-scripts build",
+    "//test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "analyze": "source-map-explorer build/static/js/main.*",
+    "start:webClient": "react-scripts start",
+    "start:services": "cd ./src/services && npm run dev",
+    "//start:services": "micro-cluster -p 4000 ./src/services/app.js",
+    "serve": "pushstate-server build",
+    "start:devdb":
+      "cd ../../tools/dynamodb_local_latest && java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb"
+  }
+}
